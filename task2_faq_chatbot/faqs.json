@@ -1,0 +1,26 @@
+[
+  {
+    "question": "What are the timings of the hackathon?",
+    "answer": "The hackathon starts at 9:00 AM on Saturday and ends at 5:00 PM on Sunday. It is a 32-hour continuous event."
+  },
+  {
+    "question": "Is food provided during the event?",
+    "answer": "Yes, we will provide breakfast, lunch, and dinner on both days, along with midnight snacks and unlimited coffee."
+  },
+  {
+    "question": "Do I need to have a team to participate?",
+    "answer": "No, you can participate as an individual or in a team of up to 4 members. If you don't have a team, we will have team-building activities at the start of the event."
+  },
+  {
+    "question": "What should I bring with me?",
+    "answer": "Please bring your laptop, charger, any necessary hardware, a valid ID, and comfortable clothing. A sleeping bag is recommended if you plan to sleep at the venue."
+  },
+  {
+    "question": "Who can participate in this hackathon?",
+    "answer": "The hackathon is open to all university students, recent graduates, and professionals interested in coding and problem-solving."
+  },
+  {
+    "question": "Are there any specific themes or challenges?",
+    "answer": "Yes, the main themes are Artificial Intelligence, FinTech, and Healthcare. Detailed problem statements will be revealed during the opening ceremony."
+  }
+]

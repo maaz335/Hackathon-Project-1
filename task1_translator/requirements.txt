@@ -1,2 +1,5 @@
 streamlit
-deep-translator==1.11.4
+deep-translator
+gTTS
+fpdf2
+python-docx

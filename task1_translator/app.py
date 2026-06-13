@@ -9,69 +9,66 @@ import os
 
 st.set_page_config(page_title="SupportBot | Hackathon 2026", page_icon="🌍")
 
-# --- THEME ENGINE ---
-def get_current_theme():
-    config_dir = ".streamlit"
-    config_path = os.path.join(config_dir, "config.toml")
-    if not os.path.exists(config_path):
-        return "System Default"
-    try:
-        with open(config_path, "r") as f:
-            content = f.read()
-            if 'backgroundColor="#0B1D3A"' in content: return "Midnight Blue"
-            elif 'backgroundColor="#1a3300"' in content: return "Forest Green"
-            elif 'backgroundColor="#0e1117"' in content: return "Dark Mode"
-            elif 'backgroundColor="#ffffff"' in content: return "Light Mode"
-    except:
-        pass
-    return "System Default"
+# --- THEME ENGINE (CSS Based for Cloud Compatibility) ---
+if 'app_theme' not in st.session_state:
+    st.session_state.app_theme = "Dark Mode"
 
-def apply_theme(theme_name):
-    config_dir = ".streamlit"
-    config_path = os.path.join(config_dir, "config.toml")
-    
-    if not os.path.exists(config_dir):
-        os.makedirs(config_dir)
-        
-    themes = {
-        "Light Mode": {"base": "light", "primaryColor": "#ff4b4b", "backgroundColor": "#ffffff", "secondaryBackgroundColor": "#f0f2f6", "textColor": "#000000"},
-        "Dark Mode": {"base": "dark", "primaryColor": "#ff4b4b", "backgroundColor": "#0e1117", "secondaryBackgroundColor": "#262730", "textColor": "#ffffff"},
-        "Midnight Blue": {"base": "dark", "primaryColor": "#4A90E2", "backgroundColor": "#0B1D3A", "secondaryBackgroundColor": "#071326", "textColor": "#E8F1F2"},
-        "Forest Green": {"base": "dark", "primaryColor": "#80ff00", "backgroundColor": "#1a3300", "secondaryBackgroundColor": "#0d1a00", "textColor": "#e6ffcc"},
-    }
-    
-    if theme_name == "System Default":
-        if os.path.exists(config_path):
-            os.remove(config_path)
-            st.rerun()
-    elif theme_name in themes:
-        t = themes[theme_name]
-        config_content = f"""[theme]
-base="{t['base']}"
-primaryColor="{t['primaryColor']}"
-backgroundColor="{t['backgroundColor']}"
-secondaryBackgroundColor="{t['secondaryBackgroundColor']}"
-textColor="{t['textColor']}"
-"""
-        current_content = ""
-        if os.path.exists(config_path):
-            with open(config_path, "r") as f:
-                current_content = f.read()
-                
-        if current_content.strip() != config_content.strip():
-            with open(config_path, "w") as f:
-                f.write(config_content)
-            st.rerun()
+themes = {
+    "Light Mode": {"primaryColor": "#ff4b4b", "backgroundColor": "#ffffff", "secondaryBackgroundColor": "#f0f2f6", "textColor": "#000000"},
+    "Dark Mode": {"primaryColor": "#ff4b4b", "backgroundColor": "#0e1117", "secondaryBackgroundColor": "#262730", "textColor": "#ffffff"},
+    "Midnight Blue": {"primaryColor": "#4A90E2", "backgroundColor": "#0B1D3A", "secondaryBackgroundColor": "#071326", "textColor": "#E8F1F2"},
+    "Forest Green": {"primaryColor": "#80ff00", "backgroundColor": "#1a3300", "secondaryBackgroundColor": "#0d1a00", "textColor": "#e6ffcc"},
+}
+
+def apply_theme_css():
+    theme_name = st.session_state.app_theme
+    if theme_name == "System Default" or theme_name not in themes:
+        return
+    t = themes[theme_name]
+    css = f"""
+    <style>
+        [data-testid="stAppViewContainer"] {{
+            background-color: {t['backgroundColor']} !important;
+            color: {t['textColor']} !important;
+        }}
+        [data-testid="stHeader"] {{
+            background-color: {t['backgroundColor']} !important;
+        }}
+        [data-testid="stSidebar"] {{
+            background-color: {t['secondaryBackgroundColor']} !important;
+        }}
+        .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown li, label, .stText {{
+            color: {t['textColor']} !important;
+        }}
+        div[data-baseweb="select"] > div, div[data-baseweb="base-input"] > input, textarea {{
+            background-color: {t['secondaryBackgroundColor']} !important;
+            color: {t['textColor']} !important;
+            border-color: {t['primaryColor']} !important;
+        }}
+        .stButton>button {{
+            background-color: {t['primaryColor']} !important;
+            color: {'#ffffff' if theme_name != 'Light Mode' else '#ffffff'} !important;
+            border: none !important;
+        }}
+        .stButton>button:hover {{
+            opacity: 0.8;
+            color: #ffffff !important;
+        }}
+    </style>
+    """
+    st.markdown(css, unsafe_allow_html=True)
 
 # Customization Sidebar
 st.sidebar.title("Customization")
 
-current_theme = get_current_theme()
 theme_options = ["System Default", "Light Mode", "Dark Mode", "Midnight Blue", "Forest Green"]
-selected_theme = st.sidebar.selectbox("App Theme", theme_options, index=theme_options.index(current_theme))
+selected_theme = st.sidebar.selectbox("App Theme", theme_options, index=theme_options.index(st.session_state.app_theme) if st.session_state.app_theme in theme_options else 0)
 
-if selected_theme != current_theme:
-    apply_theme(selected_theme)
+if selected_theme != st.session_state.app_theme:
+    st.session_state.app_theme = selected_theme
+    st.rerun()
+
+apply_theme_css()
 
 font_size = st.sidebar.slider("Text Font Size", 12, 40, 16)
 font_family = st.sidebar.selectbox("Font Style", ["sans-serif", "serif", "monospace", "cursive", "Arial", "Courier New"])
